@@ -79,19 +79,18 @@ app.post("/leads", async (req, res) => {
       priority,
     });
     await newLeads.save();
-    const savedLead = await Lead.findById(newLeads._id).populate(
-      "salesAgent",
-      "name"
-    );
+
+   // Populate the salesAgent field before sending response
+   await newLeads.populate("salesAgent", "name");
    
-    if (!savedLead) {
+    if (!newLeads) {
       res
         .status(404)
         .json({ error: `Sales agent with ID ${salesAgent._id} not found.` });
     }
     res
       .status(201)
-      .json({ message: "New Lead created successfully", lead: savedLead });
+      .json({ message: "New Lead created successfully", lead: newLeads });
   } catch (error) {
     res.status(500).json({ error: "Internal server error." });
   }
