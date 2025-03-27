@@ -66,6 +66,9 @@ app.post("/leads", async (req, res) => {
   try {
     const { name, source, salesAgent, status, tags, timeToClose, priority } =
       req.body;
+      if (!name) {
+        res.status(400).json({ error: "Invalid input: 'name' is required." });
+      }
     const newLeads = new Lead({
       name,
       source,
@@ -80,9 +83,7 @@ app.post("/leads", async (req, res) => {
       "salesAgent",
       "name"
     );
-    if (!name) {
-      res.status(400).json({ error: "Invalid input: 'name' is required." });
-    }
+   
     if (!savedLead) {
       res
         .status(404)
@@ -302,7 +303,7 @@ app.get("/report/pipeline", async (re, res) => {
   } catch (error) {
     res.status(500).json({ error: "Internal server error." });
   }
-})
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
