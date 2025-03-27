@@ -275,24 +275,33 @@ app.post("/leads/:id/comments", async (req, res) => {
 });
 
 app.get("/report/last-week", async (req, res) => {
-    try {
-        const lastWeek = new Date();
-        lastWeek.setDate(lastWeek.getDate() - 7);
+  try {
+    const lastWeek = new Date();
+    lastWeek.setDate(lastWeek.getDate() - 7);
 
-        const closedLeads = await Lead.find({ status: "Closed", closedAt: { $gte: lastWeek } }).populate("salesAgent", "name");
+    const closedLeads = await Lead.find({ status: "Closed", closedAt: { $gte: lastWeek } }).populate("salesAgent", "name");
 
-        const response = closedLeads.map((lead) => ({
-        id: lead._id,
-        name: lead.name,
-        salesAgent: lead.salesAgent.name,
-        closedAt: lead.closedAt
-        }));
+    const response = closedLeads.map((lead) => ({
+      id: lead._id,
+      name: lead.name,
+      salesAgent: lead.salesAgent.name,
+      closedAt: lead.closedAt
+    }));
 
-        res.status(200).json(response);
+    res.status(200).json(response);
 
-    } catch (error) {
-        res.status(500).json({ error: "Internal server error." });
-    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+app.get("/report/pipeline", async (re, res) => {
+  try {
+    const totalLeadsInPipeline = await Lead.countDocuments({ status: { $ne: "Closed" } });
+    res.status(200).json({ totalLeadsInPipeline });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
 })
 
 app.listen(PORT, () => {
