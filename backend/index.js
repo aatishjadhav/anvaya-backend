@@ -15,8 +15,6 @@ initializeDB();
 
 const PORT = process.env.PORT || 5000;
 
-
-
 app.get("/leads", async (req, res) => {
    
     const allowedStatuses = ["New", "Contacted", "Qualified", "Proposal Sent", "Closed"];
@@ -31,19 +29,19 @@ app.get("/leads", async (req, res) => {
       }
       if (salesAgent) filter.salesAgent = salesAgent;
   
-      // ✅ Validate status
+      // Validate status
       if (status && !allowedStatuses.includes(status)) {
         return res.status(400).json({ error: `Invalid input: 'status' must be one of ${JSON.stringify(allowedStatuses)}.` });
       }
       if (status) filter.status = status;
   
-      // ✅ Validate source
+      // Validate source
       if (source && !allowedSources.includes(source)) {
         return res.status(400).json({ error: `Invalid input: 'source' must be one of ${JSON.stringify(allowedSources)}.` });
       }
       if (source) filter.source = source;
   
-      // ✅ Handle tags as an array if provided
+      // Handle tags as an array if provided
       if (tags) filter.tags = { $in: tags.split(",") };
 
     const getAllLeads = await Lead.find(filter).populate("salesAgent", "name");
@@ -96,46 +94,6 @@ app.post("/leads", async (req, res) => {
   }
 });
 
-// app.put("/leads/:id", async (req, res) => {
-//     try {
-//     const leadId = req.params.id;
-//     const dataToUpdate = req.body;
-//         if (!mongoose.Types.ObjectId.isValid(leadId)) {
-//             res.status(400).json({ error: "Invalid Lead Id" });
-//         }
-        
-//     // Allowed status and source values
-//     const validStatuses = ["New", "Contacted", "Qualified", "Proposal Sent", "Closed"];
-//     const validSources = ["Website", "Referral", "Social Media", "Advertisement"];
-
-//     // Validate status field
-//     if (dataToUpdate.status && !validStatuses.includes(dataToUpdate.status)) {
-//       return res.status(400).json({
-//         error: `Invalid input: 'status' must be one of ${JSON.stringify(validStatuses)}.`,
-//       });
-//     }
-
-//     // Validate source field
-//     if (dataToUpdate.source && !validSources.includes(dataToUpdate.source)) {
-//       return res.status(400).json({
-//         error: `Invalid input: 'source' must be one of ${JSON.stringify(validSources)}.`,
-//       });
-//         }
-        
-//      // If status is being updated to 'Closed' and closedAt is missing, set it
-//      if (dataToUpdate.status === "Closed" && !dataToUpdate.closedAt) {
-//         dataToUpdate.closedAt = new Date();
-//       }
-
-//         const updatedLead = await Lead.findByIdAndUpdate(leadId, dataToUpdate, { new: true });
-//         if (!updatedLead) {
-//             res.status(404).json({ error: `Lead with id ${leadId} not found` });
-//         }
-//     res.status(200).json(updatedLead);
-//     } catch (error) {
-//         res.status(500).json({ error: "Internal server error." });
-//     }
-// });
 
 app.put("/leads/:id", async (req, res) => {
     try {
@@ -231,6 +189,9 @@ app.post("/agents", async (req, res) => {
 app.get("/leads/:id/comments", async (req, res) => {
     try {
         const leadId = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(leadId)) {
+        res.status(404).json({ error: `Lead with ID ${leadId} not found.` });
+     }
         const getAllComments = await Comment.find({ lead: leadId }).populate("author", "name");
     
         const formattedComments = getAllComments.map(comment => ({
@@ -249,23 +210,26 @@ app.get("/leads/:id/comments", async (req, res) => {
 app.post("/leads/:id/comments", async (req, res) => {
   try {
     const leadId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(leadId)) {
+      res.status(404).json({ error: `Lead with ID ${leadId} not found.` });
+    }
+    
       const { author, commentText } = req.body;
       if (!commentText || typeof commentText !== "string") {
           res.status(400).json({ error: "comment text must be string." });
       }
-      if (!mongoose.Types.ObjectId.isValid(leadId)) {
-          res.status(404).json({ error: `Lead with ID ${leadId} not found.` });
-      }
+     
     const addNewComment = new Comment({ lead: leadId, author, commentText });
     await addNewComment.save();
-    const savedComment = await Comment.findById(addNewComment._id).populate("author", "name");
+    await addNewComment.populate("author", "name");
+   
 
     // Format response
     const formattedResponse = {
-      id: savedComment._id,
-      commentText: savedComment.commentText,
-      author: savedComment.author.name,
-      createdAt: savedComment.createdAt,
+      id: addNewComment._id,
+      commentText: addNewComment.commentText,
+      author: addNewComment.author.name,
+      createdAt: addNewComment.createdAt,
     };
 
     res.status(201).json(formattedResponse);
