@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 app.get("/leads", async (req, res) => {
    
     const allowedStatuses = ["New", "Contacted", "Qualified", "Proposal Sent", "Closed"];
-    const allowedSources = ["Website", "Referral", "Social Media", "Advertisement"];
+    const allowedSources = ["Website", "Referral", "Social Media", "Advertisement", "Cold Call", "Email"];
 
   try {
     const { salesAgent, status, tags, source } = req.query;
