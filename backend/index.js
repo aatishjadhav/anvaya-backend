@@ -112,7 +112,7 @@ app.put("/leads/:id", async (req, res) => {
 
         // Allowed status and source values
         const validStatuses = ["New", "Contacted", "Qualified", "Proposal Sent", "Closed"];
-        const validSources = ["Website", "Referral", "Social Media", "Advertisement"];
+        const validSources = ['Website', 'Referral', 'Cold Call', 'Advertisement', 'Email', 'Other'];
 
         // Validate status
         if (dataToUpdate.status && !validStatuses.includes(dataToUpdate.status)) {
