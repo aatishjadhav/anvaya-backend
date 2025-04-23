@@ -4,6 +4,7 @@ const Lead = require("./models/leads.models");
 const SalesAgent = require("./models/salesAgent.models");
 const Comment = require("./models/comments.models");
 const User = require("./models/user.models");
+initializeDB();
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const verifyToken = require("./middleware/verifyToken.js");
@@ -13,15 +14,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const corsOptions = {
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-
-initializeDB();
+app.use(cors());
 
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET;
