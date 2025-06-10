@@ -58,7 +58,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.get("/leads", verifyToken, async (req, res) => {
+app.get("/leads", async (req, res) => {
   const allowedStatuses = [
     "New",
     "Contacted",
@@ -122,7 +122,7 @@ app.get("/leads", verifyToken, async (req, res) => {
   }
 });
 
-app.get("/agents", verifyToken, async (req, res) => {
+app.get("/agents", async (req, res) => {
   try {
     const getAllAgents = await SalesAgent.find();
     res.status(200).json(getAllAgents);
@@ -289,7 +289,7 @@ app.post("/agents", verifyToken, async (req, res) => {
   }
 });
 
-app.get("/leads/:id/comments", verifyToken, async (req, res) => {
+app.get("/leads/:id/comments", async (req, res) => {
   try {
     const leadId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(leadId)) {
@@ -343,7 +343,7 @@ app.post("/leads/:id/comments", verifyToken, async (req, res) => {
   }
 });
 
-app.get("/report/last-week", verifyToken, async (req, res) => {
+app.get("/report/last-week", async (req, res) => {
   try {
     const lastWeek = new Date();
     lastWeek.setDate(lastWeek.getDate() - 7);
@@ -366,7 +366,7 @@ app.get("/report/last-week", verifyToken, async (req, res) => {
   }
 });
 
-app.get("/report/pipeline", verifyToken, async (re, res) => {
+app.get("/report/pipeline", async (re, res) => {
   try {
     const totalLeadsInPipeline = await Lead.countDocuments({
       status: { $ne: "Closed" },
