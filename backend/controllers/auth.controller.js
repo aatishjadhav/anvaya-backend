@@ -15,7 +15,7 @@ const loginUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid password" });
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, {
       expiresIn: "24h",
     });
     // Remove sensitive fields like password before sending
@@ -35,7 +35,7 @@ const signupUser = async (req, res) => {
       return res.status(400).json({ message: "User already exist" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashedPassword });
+    const user = new User({ name, email, password: hashedPassword,  role: req.body.role || "user", });
     await user.save();
     res.status(200).json({ message: "user registered successfully" });
   } catch (error) {
