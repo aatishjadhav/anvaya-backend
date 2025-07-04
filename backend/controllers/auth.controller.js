@@ -35,7 +35,7 @@ const signupUser = async (req, res) => {
       return res.status(400).json({ message: "User already exist" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashedPassword,  role: req.body.role || "user", });
+    const user = new User({ name, email, password: hashedPassword,  role: req.body.role || "agent", });
     await user.save();
     res.status(200).json({ message: "user registered successfully" });
   } catch (error) {

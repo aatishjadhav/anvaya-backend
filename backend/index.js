@@ -17,13 +17,13 @@ const authRoutes = require("./routes/auth.routes");
 const commentRoutes = require("./routes/comments.routes");
 const leadRoutes = require("./routes/leads.routes");
 const salesAgentRoutes = require("./routes/salesAgent.routes");
-const userRoutes = require("./routes/user.routes");
+const agentRoutes = require("./routes/user.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/lead", commentRoutes);
 app.use("/api/leads", leadRoutes);
-app.use("/api/agents", salesAgentRoutes);
-app.use("/api/users", userRoutes);
+// app.use("/api/agents", salesAgentRoutes);
+app.use("/api/agents", agentRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

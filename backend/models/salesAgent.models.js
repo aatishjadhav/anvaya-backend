@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Sales Agent Schema
 const salesAgentSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -9,7 +8,7 @@ const salesAgentSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, 'Sales Agent email is required'],
-    unique: true,  // Email must be unique across agents
+    unique: true,  
   },
   createdAt: {
     type: Date,
